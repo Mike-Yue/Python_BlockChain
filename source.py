@@ -21,6 +21,12 @@ class Block:
                 print(self.nonce)
         self.current_Hash = hash_value
 
+    def check_Self(self):
+        total_string = str(self.blocknum) + str(self.nonce) + self.data + self.previous_Hash;
+        hash_value = hashlib.sha256(total_string.encode('utf-8')).hexdigest();
+        if(hash_value != self.current_Hash):
+            return False
+        return True
 
 
 
@@ -37,6 +43,7 @@ Block3.mine_Nonce()
 blocknum += 1
 
 print(Block1.blocknum, Block1.nonce, Block1.data, Block1.previous_Hash, Block1.current_Hash)
+print(Block1.check_Self())
 print(Block2.blocknum, Block2.nonce, Block2.data, Block2.previous_Hash, Block2.current_Hash)
 print(Block3.blocknum, Block3.nonce, Block3.data, Block3.previous_Hash, Block3.current_Hash)
 
