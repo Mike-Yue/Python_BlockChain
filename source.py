@@ -14,11 +14,15 @@ def print_text_field():
     if blocknum == 0:
         new_block = Block(submit_text.get(1.0, END), "0000000000000000000000000000000000000000000000000000000000000000", blocknum)
     else:
-        new_block = Block(submit_text.get(1.0, END), BlockChain[0].current_Hash, blocknum)
+        new_block = Block(submit_text.get(1.0, END), BlockChain[blocknum - 1].current_Hash, blocknum)
     new_block.mine_nonce()
     BlockChain.append(new_block)
     print (new_block.blocknum, new_block.nonce, new_block.data, new_block.previous_Hash, new_block.current_Hash)
     blocknum += 1
+
+#Quits GUI
+def quit_gui():
+        top.destroy()
 
 class Block:
     def __init__(self, data, previous_Hash, blocknum):
@@ -50,13 +54,14 @@ class Block:
 
 
 top = tkinter.Tk()
-root = Tk()
 caption = Label(top, text = "Enter data for the block")
 caption.pack()
 submit_text = Text(top, bd = 5)
 submit_text.pack(side = RIGHT)
 submit_button = tkinter.Button(top, text = "submit", command = print_text_field)
 submit_button.pack(side = LEFT)
+quit_button = tkinter.Button(top, text = "Exit Application", command = quit_gui)
+quit_button.pack(side = LEFT)
 top.mainloop()
 
 
