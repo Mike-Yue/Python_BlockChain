@@ -4,6 +4,21 @@ import hashlib
 import tkinter
 from tkinter import *
 blocknum = 0
+BlockChain = []
+
+
+#Prints text in the submit_text widget to console
+def print_text_field():
+    print(submit_text.get(1.0, END))
+    global blocknum, BlockChain
+    if blocknum == 0:
+        new_block = Block(submit_text.get(1.0, END), "0000000000000000000000000000000000000000000000000000000000000000", blocknum)
+    else:
+        new_block = Block(submit_text.get(1.0, END), BlockChain[0].current_Hash, blocknum)
+    new_block.mine_nonce()
+    BlockChain.append(new_block)
+    print (new_block.blocknum, new_block.nonce, new_block.data, new_block.previous_Hash, new_block.current_Hash)
+    blocknum += 1
 
 class Block:
     def __init__(self, data, previous_Hash, blocknum):
@@ -31,28 +46,11 @@ class Block:
         return True
 
 
-#Prints text in the submit_text widget to console
-def print_text_field():
-    print(submit_text.get(1.0, END))
 
-Block1 = Block("abcd", "0000000000000000000000000000000000000000000000000000000000000000", blocknum)
-Block1.mine_nonce()
-blocknum += 1
 
-Block2 = Block("PogChamp", Block1.current_Hash, blocknum)
-Block2.mine_nonce()
-blocknum += 1
-
-Block3 = Block("OmegaLul", Block2.current_Hash, blocknum)
-Block3.mine_nonce()
-blocknum += 1
-
-print(Block1.blocknum, Block1.nonce, Block1.data, Block1.previous_Hash, Block1.current_Hash)
-print(Block1.check_self())
-print(Block2.blocknum, Block2.nonce, Block2.data, Block2.previous_Hash, Block2.current_Hash)
-print(Block3.blocknum, Block3.nonce, Block3.data, Block3.previous_Hash, Block3.current_Hash)
 
 top = tkinter.Tk()
+root = Tk()
 caption = Label(top, text = "Enter data for the block")
 caption.pack()
 submit_text = Text(top, bd = 5)
@@ -60,7 +58,6 @@ submit_text.pack(side = RIGHT)
 submit_button = tkinter.Button(top, text = "submit", command = print_text_field)
 submit_button.pack(side = LEFT)
 top.mainloop()
-
 
 
 
