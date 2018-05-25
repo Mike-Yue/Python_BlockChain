@@ -19,6 +19,7 @@ def print_text_field():
     BlockChain.append(new_block)
     print (new_block.blocknum, new_block.nonce, new_block.data, new_block.previous_Hash, new_block.current_Hash)
     blocknum += 1
+    submit_text.delete(1.0, END)
 
 #Quits GUI
 def quit_gui():
@@ -63,19 +64,19 @@ top = tkinter.Tk()
 
 #Captions
 caption = Label(top, text = "Enter data for the block")
-caption.pack()
+caption.grid(row = 0, columnspan = 2)
 
 #Text entries
 submit_text = Text(top, bd = 5)
-submit_text.pack(side = RIGHT)
+submit_text.grid(row = 1, rowspan = 3)
 
 #Buttons
 print_blocks_button = tkinter.Button(top, text = "Print all blocks", command = print_all_blocks)
-print_blocks_button.pack(side = LEFT)
+print_blocks_button.grid(row = 1, column = 1)
 submit_button = tkinter.Button(top, text = "submit", command = print_text_field)
-submit_button.pack(side = LEFT)
+submit_button.grid(row = 2, column = 1)
 quit_button = tkinter.Button(top, text = "Exit Application", command = quit_gui)
-quit_button.pack(side = LEFT)
+quit_button.grid(row = 3, column = 1)
 top.mainloop()
 
 
