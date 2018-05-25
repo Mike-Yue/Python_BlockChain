@@ -22,7 +22,13 @@ def print_text_field():
 
 #Quits GUI
 def quit_gui():
-        top.destroy()
+    top.destroy()
+
+def print_all_blocks():
+    length = len(BlockChain)
+    for i in range(0, length):
+        print(BlockChain[i].blocknum, BlockChain[i].nonce, BlockChain[i].data, BlockChain[i].previous_Hash,
+              BlockChain[i].current_Hash)
 
 class Block:
     def __init__(self, data, previous_Hash, blocknum):
@@ -54,10 +60,18 @@ class Block:
 
 
 top = tkinter.Tk()
+
+#Captions
 caption = Label(top, text = "Enter data for the block")
 caption.pack()
+
+#Text entries
 submit_text = Text(top, bd = 5)
 submit_text.pack(side = RIGHT)
+
+#Buttons
+print_blocks_button = tkinter.Button(top, text = "Print all blocks", command = print_all_blocks)
+print_blocks_button.pack(side = LEFT)
 submit_button = tkinter.Button(top, text = "submit", command = print_text_field)
 submit_button.pack(side = LEFT)
 quit_button = tkinter.Button(top, text = "Exit Application", command = quit_gui)
