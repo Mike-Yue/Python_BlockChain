@@ -2,7 +2,9 @@
 import random
 import hashlib
 import tkinter
+import sqlite3
 from tkinter import *
+
 blocknum = 0
 BlockChain = []
 
@@ -18,6 +20,15 @@ def print_text_field():
     new_block.mine_nonce()
     BlockChain.append(new_block)
     print (new_block.blocknum, new_block.nonce, new_block.data, new_block.previous_Hash, new_block.current_Hash)
+    insert_block_command = """
+    INSERT INTO BlockChain (Block_Number, Nonce, Data, Previous_Hash, Current_Hash) 
+    VALUES ("{num}", "{non}", "{data_value}", "{prevhash}", "{currhash}");
+    """
+    insert_block_command = insert_block_command.format(num = BlockChain[blocknum].blocknum, non = BlockChain[blocknum].nonce,
+                                                       data_value = BlockChain[blocknum].data, prevhash = BlockChain[blocknum].previous_Hash,
+                                                       currhash = BlockChain[blocknum].current_Hash)
+    cursor.execute(insert_block_command)
+    connection.commit()
     blocknum += 1
     submit_text.delete(1.0, END)
 
@@ -58,7 +69,19 @@ class Block:
 
 
 
+connection = sqlite3.connect("blockchain_storage.db")
+cursor = connection.cursor()
 
+create_table_command = """
+CREATE TABLE BlockChain (
+Block_Number INTEGER,
+Nonce INTEGER,
+Data VARCHAR(500),
+Previous_Hash VARCHAR(64),
+Current_Hash VARCHAR(64));
+"""
+
+#cursor.execute(create_table_command)
 
 top = tkinter.Tk()
 
@@ -73,7 +96,7 @@ submit_text.grid(row = 1, rowspan = 3)
 #Buttons
 print_blocks_button = tkinter.Button(top, text = "Print all blocks", command = print_all_blocks)
 print_blocks_button.grid(row = 1, column = 1)
-submit_button = tkinter.Button(top, text = "submit", command = print_text_field)
+submit_button = tkinter.Button(top, text = "Mine New Block", command = print_text_field)
 submit_button.grid(row = 2, column = 1)
 quit_button = tkinter.Button(top, text = "Exit Application", command = quit_gui)
 quit_button.grid(row = 3, column = 1)
