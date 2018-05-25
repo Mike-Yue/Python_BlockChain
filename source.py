@@ -1,3 +1,4 @@
+# noinspection PyInterpreter
 import random
 import hashlib
 import tkinter
@@ -30,7 +31,9 @@ class Block:
         return True
 
 
-
+#Prints text in the submit_text widget to console
+def print_text_field():
+    print(submit_text.get(1.0, END))
 
 Block1 = Block("abcd", "0000000000000000000000000000000000000000000000000000000000000000", blocknum)
 Block1.mine_nonce()
@@ -50,9 +53,14 @@ print(Block2.blocknum, Block2.nonce, Block2.data, Block2.previous_Hash, Block2.c
 print(Block3.blocknum, Block3.nonce, Block3.data, Block3.previous_Hash, Block3.current_Hash)
 
 top = tkinter.Tk()
-submit = Entry(top, bd = 5)
-submit.pack(side = RIGHT)
+caption = Label(top, text = "Enter data for the block")
+caption.pack()
+submit_text = Text(top, bd = 5)
+submit_text.pack(side = RIGHT)
+submit_button = tkinter.Button(top, text = "submit", command = print_text_field)
+submit_button.pack(side = LEFT)
 top.mainloop()
+
 
 
 
