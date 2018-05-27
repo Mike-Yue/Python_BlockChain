@@ -4,19 +4,18 @@ import hashlib
 import tkinter
 import sqlite3
 from tkinter import *
-
-blocknum = 0
-BlockChain = []
+from datetime import datetime
 
 
 #Prints text in the submit_text widget to console
+#Mines new block with the text in the field as the data
 def print_text_field():
     print(submit_text.get(1.0, END))
     global blocknum, BlockChain
     if blocknum == 0:
-        new_block = Block(submit_text.get(1.0, END), "0000000000000000000000000000000000000000000000000000000000000000", blocknum)
+        new_block = Block(submit_text.get(1.0, END) + str(datetime.now()), "0000000000000000000000000000000000000000000000000000000000000000", blocknum)
     else:
-        new_block = Block(submit_text.get(1.0, END), BlockChain[blocknum - 1].current_Hash, blocknum)
+        new_block = Block(submit_text.get(1.0, END) + str(datetime.now()), BlockChain[blocknum - 1].current_Hash, blocknum)
     new_block.mine_nonce()
     BlockChain.append(new_block)
     print (new_block.blocknum, new_block.nonce, new_block.data, new_block.previous_Hash, new_block.current_Hash)
@@ -80,6 +79,26 @@ Data VARCHAR(500),
 Previous_Hash VARCHAR(64),
 Current_Hash VARCHAR(64));
 """
+
+cursor.execute("SELECT count(*) FROM BlockChain")
+blocknum = cursor.fetchone()[0]
+print (blocknum)
+BlockChain = []
+
+#Fills BlockChain list with data from SQLite database
+for index in range (0, blocknum):
+    print (index)
+    fill_table_command = """
+    SELECT * from BlockChain WHERE Block_Number = "{value}";
+    """
+    fill_table_command = fill_table_command.format(value = index)
+    cursor.execute(fill_table_command)
+    retrieved_data = cursor.fetchone()
+    new_block = Block(retrieved_data[2], retrieved_data[3], index)
+    new_block.nonce = retrieved_data[1]
+    new_block.current_Hash = retrieved_data[4]
+    BlockChain.append(new_block)
+
 
 #cursor.execute(create_table_command)
 
