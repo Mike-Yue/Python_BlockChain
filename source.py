@@ -51,12 +51,12 @@ class Block:
         self.nonce = 0
         total_string = str(self.blocknum) + str(self.nonce) + self.data + self.previous_Hash
         hash_value = hashlib.sha256(total_string.encode('utf-8')).hexdigest()
-        while hash_value[0:5] != "12345":
+        print ("Mining nonce...Please wait")
+        while hash_value[0:6] != "000000":
             self.nonce += 1
             total_string = str(self.blocknum) + str(self.nonce) + self.data + self.previous_Hash
             hash_value = hashlib.sha256(total_string.encode('utf-8')).hexdigest()
-            if self.nonce % 100000 == 0:
-                print(self.nonce)
+
         self.current_Hash = hash_value
 
     def check_self(self):
@@ -79,7 +79,7 @@ Data VARCHAR(500),
 Previous_Hash VARCHAR(64),
 Current_Hash VARCHAR(64));
 """
-
+cursor.execute(create_table_command)
 cursor.execute("SELECT count(*) FROM BlockChain")
 blocknum = cursor.fetchone()[0]
 print (blocknum)
