@@ -12,17 +12,22 @@ from datetime import datetime
 #Mines new block with the text in the field as the data
 def print_text_field():
     print(submit_text.get(1.0, END))
-    global BlockChain, blocknum, iterate
+    get = requests.get('http://localhost:8080/')
+    data = get.json()
+    blocknum = data['number'] + 1
+    print(blocknum)
+    global BlockChain, iterate
     if blocknum == data["number"] + 1:
         new_block = Block(submit_text.get(1.0, END) + str(datetime.now()), data["curr_hash"], blocknum)
     else:
         new_block = Block(submit_text.get(1.0, END) + str(datetime.now()), BlockChain[iterate - 1].current_Hash, blocknum)
     new_block.mine_nonce()
     BlockChain.append(new_block)
-    print (new_block.blocknum, new_block.nonce, new_block.data, new_block.previous_Hash, new_block.current_Hash)
-    blocknum += 1
-    iterate += 1
     submit_text.delete(1.0, END)
+    newdata = {"number": blocknum, "nonce": new_block.nonce, "data": new_block.data, "prev_hash": new_block.previous_Hash, "curr_hash": new_block.current_Hash}
+    post = requests.post('http://localhost:8080/postdata', json = newdata, timeout = 0.001)
+    iterate += 1
+    blocknum += 1
 
 #Quits GUI
 def quit_gui():
@@ -59,13 +64,9 @@ class Block:
             return False
         return True
 
-get = requests.get('http://localhost:8080/')
-data = get.json()
-blocknum = data['number'] + 1
+
 BlockChain = []
 iterate = 0
-print(blocknum)
-
 
 top = tkinter.Tk()
 
