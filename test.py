@@ -1,6 +1,6 @@
 import requests
 
-get = requests.get('http://localhost:8080/')
+get = requests.get('http://localhost:8080/', auth=('admin', 'supersecret'))
 print(get.json())
 
 #newdata = {"data1": "haha!"}
