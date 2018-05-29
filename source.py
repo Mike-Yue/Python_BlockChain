@@ -12,7 +12,7 @@ from datetime import datetime
 #Mines new block with the text in the field as the data
 def print_text_field():
     print(submit_text.get(1.0, END))
-    get = requests.get('http://localhost:8080/')
+    get = requests.get('http://740f05e4.ngrok.io')
     data = get.json()
     blocknum = data['number'] + 1
     print(blocknum)
@@ -25,7 +25,7 @@ def print_text_field():
     BlockChain.append(new_block)
     submit_text.delete(1.0, END)
     newdata = {"number": blocknum, "nonce": new_block.nonce, "data": new_block.data, "prev_hash": new_block.previous_Hash, "curr_hash": new_block.current_Hash}
-    post = requests.post('http://localhost:8080/postdata', json = newdata, timeout = 0.001)
+    post = requests.post('http://740f05e4.ngrok.io/postdata', json = newdata)
     iterate += 1
     blocknum += 1
 
