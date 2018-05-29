@@ -6,24 +6,32 @@ import sqlite3
 import requests
 from tkinter import *
 from datetime import datetime
+import time
 
 
 #Prints text in the submit_text widget to console
 #Mines new block with the text in the field as the data
 def mine_block():
-    get = requests.get('http://740f05e4.ngrok.io', auth = ('admin', 'supersecret'))
+    get = requests.get('http://8c3076e2.ngrok.io', auth = ('admin', 'supersecret'))
     data = get.json()
     blocknum = data['number'] + 1
-    global BlockChain, iterate
+    global BlockChain, iterate, mining_times
     if blocknum == data["number"] + 1:
         new_block = Block(submit_text.get(1.0, END) + str(datetime.now()), data["curr_hash"], blocknum)
     else:
         new_block = Block(submit_text.get(1.0, END) + str(datetime.now()), BlockChain[iterate - 1].current_Hash, blocknum)
+    start_time = time.clock()
     new_block.mine_nonce()
+    total_time = time.clock() - start_time
+    print(str(total_time) + "seconds to run")
+    mining_times.append(total_time)
     BlockChain.append(new_block)
     submit_text.delete(1.0, END)
-    newdata = {"number": blocknum, "nonce": new_block.nonce, "data": new_block.data, "prev_hash": new_block.previous_Hash, "curr_hash": new_block.current_Hash}
-    post = requests.post('http://740f05e4.ngrok.io/postdata', json = newdata, auth = ('admin', 'supersecret'))
+
+    newdata = {"number": blocknum, "nonce": new_block.nonce, "data": new_block.data, "prev_hash": new_block.previous_Hash, "curr_hash": new_block.current_Hash,
+               "time": total_time}
+    post = requests.post('http://8c3076e2.ngrok.io/postdata', json = newdata, auth = ('admin', 'supersecret'))
+
     print (str(blocknum) + " " + str(new_block.nonce) + " " + new_block.data + " " + new_block.previous_Hash + " " + new_block.current_Hash)
     iterate += 1
     blocknum += 1
@@ -35,7 +43,7 @@ def quit_gui():
 
 def print_all_blocks():
     space = " "
-    get = requests.get('http://740f05e4.ngrok.io/allblocks', auth = ('admin', 'supersecret'))
+    get = requests.get('http://8c3076e2.ngrok.io/allblocks', auth = ('admin', 'supersecret'))
     data = get.json()
     # data is a list ADT, each element of Data is a dict ADT
     for i in range(0, len(data)):
@@ -52,7 +60,7 @@ class Block:
         total_string = str(self.blocknum) + str(self.nonce) + self.data + self.previous_Hash
         hash_value = hashlib.sha256(total_string.encode('utf-8')).hexdigest()
         print ("Mining nonce...Please wait")
-        while hash_value[0:3] != "000":
+        while hash_value[0:7] != "0000000":
             self.nonce += 1
             total_string = str(self.blocknum) + str(self.nonce) + self.data + self.previous_Hash
             hash_value = hashlib.sha256(total_string.encode('utf-8')).hexdigest()
@@ -68,6 +76,7 @@ class Block:
 
 
 BlockChain = []
+mining_times = []
 iterate = 0
 
 top = tkinter.Tk()
