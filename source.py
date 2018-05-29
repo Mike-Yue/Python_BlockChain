@@ -10,12 +10,10 @@ from datetime import datetime
 
 #Prints text in the submit_text widget to console
 #Mines new block with the text in the field as the data
-def print_text_field():
-    print(submit_text.get(1.0, END))
+def mine_block():
     get = requests.get('http://740f05e4.ngrok.io', auth = ('admin', 'supersecret'))
     data = get.json()
     blocknum = data['number'] + 1
-    print(blocknum)
     global BlockChain, iterate
     if blocknum == data["number"] + 1:
         new_block = Block(submit_text.get(1.0, END) + str(datetime.now()), data["curr_hash"], blocknum)
@@ -26,18 +24,22 @@ def print_text_field():
     submit_text.delete(1.0, END)
     newdata = {"number": blocknum, "nonce": new_block.nonce, "data": new_block.data, "prev_hash": new_block.previous_Hash, "curr_hash": new_block.current_Hash}
     post = requests.post('http://740f05e4.ngrok.io/postdata', json = newdata, auth = ('admin', 'supersecret'))
+    print (str(blocknum) + " " + str(new_block.nonce) + " " + new_block.data + " " + new_block.previous_Hash + " " + new_block.current_Hash)
     iterate += 1
     blocknum += 1
+    print ("Block successfully mined and added to BlockChain!")
 
 #Quits GUI
 def quit_gui():
     top.destroy()
 
 def print_all_blocks():
-    length = len(BlockChain)
-    for i in range(0, length):
-        print(BlockChain[i].blocknum, BlockChain[i].nonce, BlockChain[i].data, BlockChain[i].previous_Hash,
-              BlockChain[i].current_Hash)
+    space = " "
+    get = requests.get('http://740f05e4.ngrok.io/allblocks', auth = ('admin', 'supersecret'))
+    data = get.json()
+    # data is a list ADT, each element of Data is a dict ADT
+    for i in range(0, len(data)):
+        print(str(data[i]['number']) + space + str(data[i]['nonce']) + space + data[i]['data'] + space + data[i]['prev_hash'] + space + data[i]['curr_hash'])
 
 class Block:
     def __init__(self, data, previous_Hash, blocknum):
@@ -81,7 +83,7 @@ submit_text.grid(row = 1, rowspan = 3)
 #Buttons
 print_blocks_button = tkinter.Button(top, text = "Print all blocks", command = print_all_blocks)
 print_blocks_button.grid(row = 1, column = 1)
-submit_button = tkinter.Button(top, text = "Mine New Block", command = print_text_field)
+submit_button = tkinter.Button(top, text = "Mine New Block", command = mine_block)
 submit_button.grid(row = 2, column = 1)
 quit_button = tkinter.Button(top, text = "Exit Application", command = quit_gui)
 quit_button.grid(row = 3, column = 1)
