@@ -1,5 +1,6 @@
 # noinspection PyInterpreter
 import random
+import matplotlib.pyplot as plt
 import hashlib
 import tkinter
 import sqlite3
@@ -49,6 +50,13 @@ def print_all_blocks():
     for i in range(0, len(data)):
         print(str(data[i]['number']) + space + str(data[i]['nonce']) + space + data[i]['data'] + space + data[i]['prev_hash'] + space + data[i]['curr_hash'])
 
+#GETs data from NodeJS server and plots it using Matploblib
+def plot_time():
+    get = requests.get('http://8c3076e2.ngrok.io/times', auth = ('admin', 'supersecret'))
+    data = get.json()
+    plt.plot(data)
+    plt.show()
+
 class Block:
     def __init__(self, data, previous_Hash, blocknum):
         self.blocknum = blocknum
@@ -87,13 +95,19 @@ caption.grid(row = 0, columnspan = 2)
 
 #Text entries
 submit_text = Text(top, bd = 5)
-submit_text.grid(row = 1, rowspan = 3)
+submit_text.grid(row = 1, rowspan = 4)
 
 #Buttons
 print_blocks_button = tkinter.Button(top, text = "Print all blocks", command = print_all_blocks)
 print_blocks_button.grid(row = 1, column = 1)
+
 submit_button = tkinter.Button(top, text = "Mine New Block", command = mine_block)
 submit_button.grid(row = 2, column = 1)
+
 quit_button = tkinter.Button(top, text = "Exit Application", command = quit_gui)
-quit_button.grid(row = 3, column = 1)
+quit_button.grid(row = 4, column = 1)
+
+plot_button = tkinter.Button(top, text = "Plot Times", command = plot_time)
+plot_button.grid(row = 3, column = 1)
+
 top.mainloop()
