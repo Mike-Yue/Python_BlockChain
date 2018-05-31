@@ -75,6 +75,8 @@ class Block:
             self.nonce += 1
             total_string = str(self.blocknum) + str(self.nonce) + self.data + self.previous_Hash
             hash_value = hashlib.sha256(total_string.encode('utf-8')).hexdigest()
+            if(self.nonce % 500000 == 0):
+                print (self.nonce)
 
         self.current_Hash = hash_value
 
