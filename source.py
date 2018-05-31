@@ -143,3 +143,4 @@ if __name__ == '__main__':
 
     thread1 = myThread(1, "mining thread")
     top.mainloop()
+    exitFlag = 1
