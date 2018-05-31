@@ -54,6 +54,7 @@ def print_all_blocks():
 def plot_time():
     get = requests.get('http://8c3076e2.ngrok.io/times', auth = ('admin', 'supersecret'))
     data = get.json()
+    print (data)
     plt.plot(data)
     plt.xlabel('Block Number')
     plt.ylabel('Seconds')

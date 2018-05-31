@@ -1,6 +1,7 @@
 import threading
 import time
 import hashlib
+import requests
 
 exitFlag = 0
 multiplier = 0
@@ -44,8 +45,9 @@ thread3 = myThread(3, "thread3", 10000000)
 
 # Start new Threads
 start_time = time.clock()
-thread1.start()
-thread2.start()
-thread3.start()
-
-print ("Exiting Main Thread")
+#thread1.start()
+#thread2.start()
+#thread3.start()
+get = requests.get('http://8c3076e2.ngrok.io', auth=('admin', 'supersecret'))
+#data = get.json()
+print (get.text)
