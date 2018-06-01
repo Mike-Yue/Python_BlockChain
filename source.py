@@ -21,7 +21,7 @@ import time
 #Prints text in the submit_text widget to console
 #Mines new block with the text in the field as the data
 def mine_block():
-    thread1 = myThread(1, "mining thread")
+    thread1 = myThread(1, "mining thread", 'mine')
     thread1.start()
 
 #Quits GUI
@@ -31,12 +31,8 @@ def quit_gui():
     exitFlag = 1
 
 def print_all_blocks():
-    space = " "
-    get = requests.get('http://8c3076e2.ngrok.io/allblocks', auth = ('admin', 'supersecret'))
-    data = get.json()
-    # data is a list ADT, each element of Data is a dict ADT
-    for i in range(0, len(data)):
-        print(str(data[i]['number']) + space + str(data[i]['nonce']) + space + data[i]['data'] + space + data[i]['prev_hash'] + space + data[i]['curr_hash'])
+    thread2 = myThread(2, "print values thread", 'print')
+    thread2.start()
 
 #Helper function for plotting time
 def lsrl(x, y):
@@ -99,41 +95,55 @@ class Block:
 
 
 class myThread (threading.Thread):
-   def __init__(self, threadID, name):
+   def __init__(self, threadID, name, job):
       threading.Thread.__init__(self)
       self.threadID = threadID
       self.name = name
+      self.job = job
 
    def run(self):
-      print ("Starting " + self.name)
-      get = requests.get('http://8c3076e2.ngrok.io', auth=('admin', 'supersecret'))
-      data = get.json()
-      blocknum = data['number'] + 1
-      global BlockChain, iterate, mining_times
-      if blocknum == data["number"] + 1:
-          new_block = Block(submit_text.get(1.0, END) + str(datetime.now()), data["curr_hash"], blocknum)
-      else:
-          new_block = Block(submit_text.get(1.0, END) + str(datetime.now()), BlockChain[iterate - 1].current_Hash,
-                            blocknum)
-      start_time = time.clock()
-      new_block.mine_nonce()
-      total_time = time.clock() - start_time
-      print(str(total_time) + "seconds to run")
-      mining_times.append(total_time)
-      BlockChain.append(new_block)
-      submit_text.delete(1.0, END)
+      if(self.job == 'mine'):
+          print ("Starting " + self.name)
+          get = requests.get('http://8c3076e2.ngrok.io', auth=('admin', 'supersecret'))
+          data = get.json()
+          blocknum = data['number'] + 1
+          global BlockChain, iterate, mining_times
+          if blocknum == data["number"] + 1:
+              new_block = Block(submit_text.get(1.0, END) + str(datetime.now()), data["curr_hash"], blocknum)
+          else:
+              new_block = Block(submit_text.get(1.0, END) + str(datetime.now()), BlockChain[iterate - 1].current_Hash,
+                                blocknum)
+          start_time = time.clock()
+          new_block.mine_nonce()
+          total_time = time.clock() - start_time
+          print(str(total_time) + "seconds to run")
+          mining_times.append(total_time)
+          BlockChain.append(new_block)
+          submit_text.delete(1.0, END)
 
-      newdata = {"number": blocknum, "nonce": new_block.nonce, "data": new_block.data,
-                 "prev_hash": new_block.previous_Hash, "curr_hash": new_block.current_Hash,
-                 "time": total_time}
-      post = requests.post('http://8c3076e2.ngrok.io/postdata', json=newdata, auth=('admin', 'supersecret'))
+          newdata = {"number": blocknum, "nonce": new_block.nonce, "data": new_block.data,
+                     "prev_hash": new_block.previous_Hash, "curr_hash": new_block.current_Hash,
+                     "time": total_time}
+          post = requests.post('http://8c3076e2.ngrok.io/postdata', json=newdata, auth=('admin', 'supersecret'))
 
-      print(str(blocknum) + " " + str(
-          new_block.nonce) + " " + new_block.data + " " + new_block.previous_Hash + " " + new_block.current_Hash)
-      iterate += 1
-      blocknum += 1
-      print("Block successfully mined and added to BlockChain!")
-      print ("Exiting " + self.name)
+          print(str(blocknum) + " " + str(
+              new_block.nonce) + " " + new_block.data + " " + new_block.previous_Hash + " " + new_block.current_Hash)
+          iterate += 1
+          blocknum += 1
+          print("Block successfully mined and added to BlockChain!")
+          print ("Exiting " + self.name)
+          
+      if(self.job == 'print'):
+          get = requests.get('http://8c3076e2.ngrok.io/allblocks', auth=('admin', 'supersecret'))
+          data = get.json()
+          # data is a list ADT, each element of Data is a dict ADT
+          for i in range(0, len(data)):
+              print('Block Number:', str(data[i]['number']))
+              print('Block Nonce:', str(data[i]['nonce']))
+              print('Block Data:', data[i]['data'])
+              print('Block Previous Hash:', data[i]['prev_hash'])
+              print('Block Current Hash:', data[i]['curr_hash'])
+              print('\n')
 
 
 #Main Thread/Loop
