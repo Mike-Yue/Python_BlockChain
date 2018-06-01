@@ -1,5 +1,7 @@
 # noinspection PyInterpreter
 import random
+import sys
+import threading
 import matplotlib.pyplot as plt
 import hashlib
 import tkinter
@@ -7,40 +9,22 @@ import sqlite3
 import requests
 from tkinter import *
 from datetime import datetime
+from multiprocessing import Process
 import time
 
 
 #Prints text in the submit_text widget to console
 #Mines new block with the text in the field as the data
 def mine_block():
-    get = requests.get('http://8c3076e2.ngrok.io', auth = ('admin', 'supersecret'))
-    data = get.json()
-    blocknum = data['number'] + 1
-    global BlockChain, iterate, mining_times
-    if blocknum == data["number"] + 1:
-        new_block = Block(submit_text.get(1.0, END) + str(datetime.now()), data["curr_hash"], blocknum)
-    else:
-        new_block = Block(submit_text.get(1.0, END) + str(datetime.now()), BlockChain[iterate - 1].current_Hash, blocknum)
-    start_time = time.clock()
-    new_block.mine_nonce()
-    total_time = time.clock() - start_time
-    print(str(total_time) + "seconds to run")
-    mining_times.append(total_time)
-    BlockChain.append(new_block)
-    submit_text.delete(1.0, END)
+    global thread1
+    thread1.start()
 
-    newdata = {"number": blocknum, "nonce": new_block.nonce, "data": new_block.data, "prev_hash": new_block.previous_Hash, "curr_hash": new_block.current_Hash,
-               "time": total_time}
-    post = requests.post('http://8c3076e2.ngrok.io/postdata', json = newdata, auth = ('admin', 'supersecret'))
-
-    print (str(blocknum) + " " + str(new_block.nonce) + " " + new_block.data + " " + new_block.previous_Hash + " " + new_block.current_Hash)
-    iterate += 1
-    blocknum += 1
-    print ("Block successfully mined and added to BlockChain!")
 
 #Quits GUI
 def quit_gui():
     top.destroy()
+    global exitFlag
+    exitFlag = 1
 
 def print_all_blocks():
     space = " "
@@ -67,11 +51,14 @@ class Block:
         self.previous_Hash = previous_Hash
 
     def mine_nonce(self):
+        global exitFlag
         self.nonce = 0
         total_string = str(self.blocknum) + str(self.nonce) + self.data + self.previous_Hash
         hash_value = hashlib.sha256(total_string.encode('utf-8')).hexdigest()
         print ("Mining nonce...Please wait")
         while hash_value[0:7] != "0000000":
+            if(exitFlag == 1):
+                sys.exit()
             self.nonce += 1
             total_string = str(self.blocknum) + str(self.nonce) + self.data + self.previous_Hash
             hash_value = hashlib.sha256(total_string.encode('utf-8')).hexdigest()
@@ -87,32 +74,73 @@ class Block:
             return False
         return True
 
+class myThread (threading.Thread):
+   def __init__(self, threadID, name):
+      threading.Thread.__init__(self)
+      self.threadID = threadID
+      self.name = name
 
-BlockChain = []
-mining_times = []
-iterate = 0
+   def run(self):
+      print ("Starting " + self.name)
+      get = requests.get('http://8c3076e2.ngrok.io', auth=('admin', 'supersecret'))
+      data = get.json()
+      blocknum = data['number'] + 1
+      global BlockChain, iterate, mining_times
+      if blocknum == data["number"] + 1:
+          new_block = Block(submit_text.get(1.0, END) + str(datetime.now()), data["curr_hash"], blocknum)
+      else:
+          new_block = Block(submit_text.get(1.0, END) + str(datetime.now()), BlockChain[iterate - 1].current_Hash,
+                            blocknum)
+      start_time = time.clock()
+      new_block.mine_nonce()
+      total_time = time.clock() - start_time
+      print(str(total_time) + "seconds to run")
+      mining_times.append(total_time)
+      BlockChain.append(new_block)
+      submit_text.delete(1.0, END)
 
-top = tkinter.Tk()
+      newdata = {"number": blocknum, "nonce": new_block.nonce, "data": new_block.data,
+                 "prev_hash": new_block.previous_Hash, "curr_hash": new_block.current_Hash,
+                 "time": total_time}
+      post = requests.post('http://8c3076e2.ngrok.io/postdata', json=newdata, auth=('admin', 'supersecret'))
 
-#Captions
-caption = Label(top, text = "Enter data for the block")
-caption.grid(row = 0, columnspan = 2)
+      print(str(blocknum) + " " + str(
+          new_block.nonce) + " " + new_block.data + " " + new_block.previous_Hash + " " + new_block.current_Hash)
+      iterate += 1
+      blocknum += 1
+      print("Block successfully mined and added to BlockChain!")
+      print ("Exiting " + self.name)
 
-#Text entries
-submit_text = Text(top, bd = 5)
-submit_text.grid(row = 1, rowspan = 4)
 
-#Buttons
-print_blocks_button = tkinter.Button(top, text = "Print all blocks", command = print_all_blocks)
-print_blocks_button.grid(row = 1, column = 1)
+if __name__ == '__main__':
+    BlockChain = []
+    mining_times = []
+    iterate = 0
+    exitFlag = 0
 
-submit_button = tkinter.Button(top, text = "Mine New Block", command = mine_block)
-submit_button.grid(row = 2, column = 1)
+    top = tkinter.Tk()
 
-quit_button = tkinter.Button(top, text = "Exit Application", command = quit_gui)
-quit_button.grid(row = 4, column = 1)
+    #Captions
+    caption = Label(top, text = "Enter data for the block")
+    caption.grid(row = 0, columnspan = 2)
 
-plot_button = tkinter.Button(top, text = "Plot Times", command = plot_time)
-plot_button.grid(row = 3, column = 1)
+    #Text entries
+    submit_text = Text(top, bd = 5)
+    submit_text.grid(row = 1, rowspan = 4)
 
-top.mainloop()
+    #Buttons
+    print_blocks_button = tkinter.Button(top, text = "Print all blocks", command = print_all_blocks)
+    print_blocks_button.grid(row = 1, column = 1)
+
+    submit_button = tkinter.Button(top, text = "Mine New Block", command = mine_block)
+    submit_button.grid(row = 2, column = 1)
+
+    quit_button = tkinter.Button(top, text = "Exit Application", command = quit_gui)
+    quit_button.grid(row = 4, column = 1)
+
+    plot_button = tkinter.Button(top, text = "Plot Times", command = plot_time)
+    plot_button.grid(row = 3, column = 1)
+
+    thread1 = myThread(1, "mining thread")
+    top.mainloop()
+    exitFlag = 1
