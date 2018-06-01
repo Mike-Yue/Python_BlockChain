@@ -3,6 +3,11 @@ import random
 import sys
 import threading
 import matplotlib.pyplot as plt
+from matplotlib import style
+from statistics import mean
+style.use('ggplot')
+import numpy as np
+from numpy.polynomial.polynomial import polyfit
 import hashlib
 import tkinter
 import sqlite3
@@ -16,9 +21,8 @@ import time
 #Prints text in the submit_text widget to console
 #Mines new block with the text in the field as the data
 def mine_block():
-    global thread1
+    thread1 = myThread(1, "mining thread")
     thread1.start()
-
 
 #Quits GUI
 def quit_gui():
@@ -34,15 +38,33 @@ def print_all_blocks():
     for i in range(0, len(data)):
         print(str(data[i]['number']) + space + str(data[i]['nonce']) + space + data[i]['data'] + space + data[i]['prev_hash'] + space + data[i]['curr_hash'])
 
+#Helper function for plotting time
+def lsrl(x, y):
+    m = (((mean(x)*mean(y)) - mean(x * y))/((mean(x)*mean(x))-mean(x*x)))
+    b = mean(y) - m * mean(x)
+    return m, b
+
 #GETs data from NodeJS server and plots it using Matploblib
 def plot_time():
     get = requests.get('http://8c3076e2.ngrok.io/times', auth = ('admin', 'supersecret'))
     data = get.json()
     print (data)
-    plt.plot(data)
+    x = []
+    for i in range(0, len(data)):
+        x.append(i)
+    x = np.array(x)
+    y = np.array(data)
+    m, b = lsrl(x, y)
+    regression_line = [(m*xp) + b for xp in x]
+    #print (z)
+
+    plt.scatter(x, data)
+    plt.plot(x, regression_line)
     plt.xlabel('Block Number')
     plt.ylabel('Seconds')
     plt.show()
+
+
 
 class Block:
     def __init__(self, data, previous_Hash, blocknum):
@@ -73,6 +95,8 @@ class Block:
         if hash_value != self.current_Hash:
             return False
         return True
+
+
 
 class myThread (threading.Thread):
    def __init__(self, threadID, name):
@@ -112,6 +136,7 @@ class myThread (threading.Thread):
       print ("Exiting " + self.name)
 
 
+#Main Thread/Loop
 if __name__ == '__main__':
     BlockChain = []
     mining_times = []
@@ -141,6 +166,6 @@ if __name__ == '__main__':
     plot_button = tkinter.Button(top, text = "Plot Times", command = plot_time)
     plot_button.grid(row = 3, column = 1)
 
-    thread1 = myThread(1, "mining thread")
+
     top.mainloop()
     exitFlag = 1
