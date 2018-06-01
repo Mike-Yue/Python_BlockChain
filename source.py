@@ -132,7 +132,7 @@ class myThread (threading.Thread):
           blocknum += 1
           print("Block successfully mined and added to BlockChain!")
           print ("Exiting " + self.name)
-          
+
       if(self.job == 'print'):
           get = requests.get('http://8c3076e2.ngrok.io/allblocks', auth=('admin', 'supersecret'))
           data = get.json()
@@ -154,27 +154,28 @@ if __name__ == '__main__':
     exitFlag = 0
 
     top = tkinter.Tk()
+    top.title("Welcome to the ZerOCoin GUI")
 
     #Captions
     caption = Label(top, text = "Enter data for the block")
     caption.grid(row = 0, columnspan = 2)
 
     #Text entries
-    submit_text = Text(top, bd = 5)
+    submit_text = Text(top, bd = 5, height = '30' )
     submit_text.grid(row = 1, rowspan = 4)
 
     #Buttons
-    print_blocks_button = tkinter.Button(top, text = "Print all blocks", command = print_all_blocks)
-    print_blocks_button.grid(row = 1, column = 1)
+    print_blocks_button = tkinter.Button(top, text = "Print All blocks", command = print_all_blocks, font = ('Times', '12'))
+    print_blocks_button.grid(row = 1, column = 1, sticky=W+E+N+S)
 
-    submit_button = tkinter.Button(top, text = "Mine New Block", command = mine_block)
-    submit_button.grid(row = 2, column = 1)
+    submit_button = tkinter.Button(top, text = "Mine New Block", command = mine_block, font = ('Times', '12'))
+    submit_button.grid(row = 2, column = 1, sticky=W+E+N+S)
 
-    quit_button = tkinter.Button(top, text = "Exit Application", command = quit_gui)
-    quit_button.grid(row = 4, column = 1)
+    quit_button = tkinter.Button(top, text = "Exit Application", command = quit_gui, font = ('Times', '12'))
+    quit_button.grid(row = 4, column = 1, sticky=W+E+N+S)
 
-    plot_button = tkinter.Button(top, text = "Plot Times", command = plot_time)
-    plot_button.grid(row = 3, column = 1)
+    plot_button = tkinter.Button(top, text = "Plot Times", command = plot_time, font = ('Times', '12'), width = '20')
+    plot_button.grid(row = 3, column = 1, sticky=W+E+N+S)
 
 
     top.mainloop()
