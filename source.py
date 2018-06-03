@@ -75,7 +75,8 @@ class Block:
         total_string = str(self.blocknum) + str(self.nonce) + self.data + self.previous_Hash
         hash_value = hashlib.sha256(total_string.encode('utf-8')).hexdigest()
         print ("Mining nonce...Please wait")
-        while hash_value[0:7] != "0000000":
+        print (self.blocknum)
+        while hash_value[0:6] != "000000":
             if(exitFlag == 1):
                 sys.exit()
 
@@ -86,11 +87,12 @@ class Block:
                 print (self.nonce)
         get = requests.get('http://8c3076e2.ngrok.io/interrupt', auth=('admin', 'supersecret'))
         data = get.json()
+        print (data)
         if (data != self.blocknum):
-            print("Block has been minsed by someone else")
             exitLoop = True
         if(exitLoop == False):
             self.current_Hash = hash_value
+        return exitLoop
 
     def check_self(self):
         total_string = str(self.blocknum) + str(self.nonce) + self.data + self.previous_Hash
@@ -121,23 +123,27 @@ class myThread (threading.Thread):
               new_block = Block(submit_text.get(1.0, END) + str(datetime.now()), BlockChain[iterate - 1].current_Hash,
                                 blocknum)
           start_time = time.clock()
-          new_block.mine_nonce()
-          total_time = time.clock() - start_time
-          print(str(total_time) + "seconds to run")
-          mining_times.append(total_time)
-          BlockChain.append(new_block)
-          submit_text.delete(1.0, END)
+          duplicate = new_block.mine_nonce()
+          if(duplicate == False):
+              total_time = time.clock() - start_time
+              print(str(total_time) + "seconds to run")
+              mining_times.append(total_time)
+              BlockChain.append(new_block)
+              submit_text.delete(1.0, END)
 
-          newdata = {"number": blocknum, "nonce": new_block.nonce, "data": new_block.data,
-                     "prev_hash": new_block.previous_Hash, "curr_hash": new_block.current_Hash,
-                     "time": total_time}
-          post = requests.post('http://8c3076e2.ngrok.io/postdata', json=newdata, auth=('admin', 'supersecret'))
+              newdata = {"number": blocknum, "nonce": new_block.nonce, "data": new_block.data,
+                         "prev_hash": new_block.previous_Hash, "curr_hash": new_block.current_Hash,
+                         "time": total_time}
+              post = requests.post('http://8c3076e2.ngrok.io/postdata', json=newdata, auth=('admin', 'supersecret'))
 
-          print(str(blocknum) + " " + str(
-              new_block.nonce) + " " + new_block.data + " " + new_block.previous_Hash + " " + new_block.current_Hash)
-          iterate += 1
-          blocknum += 1
-          print("Block successfully mined and added to BlockChain!")
+              print(str(blocknum) + " " + str(
+                  new_block.nonce) + " " + new_block.data + " " + new_block.previous_Hash + " " + new_block.current_Hash)
+              iterate += 1
+              blocknum += 1
+              print("Block successfully mined and added to BlockChain!")
+          else:
+              print ("Block has already been mined")
+
           print ("Exiting " + self.name)
 
       if(self.job == 'print'):
@@ -159,6 +165,7 @@ if __name__ == '__main__':
     mining_times = []
     iterate = 0
     exitFlag = 0
+    exitLoop = False
 
     top = tkinter.Tk()
     top.title("Welcome to the ZerOCoin GUI")
