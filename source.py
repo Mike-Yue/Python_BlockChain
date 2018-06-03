@@ -70,6 +70,7 @@ class Block:
 
     def mine_nonce(self):
         global exitFlag
+        exitLoop = False
         self.nonce = 0
         total_string = str(self.blocknum) + str(self.nonce) + self.data + self.previous_Hash
         hash_value = hashlib.sha256(total_string.encode('utf-8')).hexdigest()
@@ -77,13 +78,19 @@ class Block:
         while hash_value[0:7] != "0000000":
             if(exitFlag == 1):
                 sys.exit()
+
             self.nonce += 1
             total_string = str(self.blocknum) + str(self.nonce) + self.data + self.previous_Hash
             hash_value = hashlib.sha256(total_string.encode('utf-8')).hexdigest()
             if(self.nonce % 500000 == 0):
                 print (self.nonce)
-
-        self.current_Hash = hash_value
+        get = requests.get('http://8c3076e2.ngrok.io/interrupt', auth=('admin', 'supersecret'))
+        data = get.json()
+        if (data != self.blocknum):
+            print("Block has been minsed by someone else")
+            exitLoop = True
+        if(exitLoop == False):
+            self.current_Hash = hash_value
 
     def check_self(self):
         total_string = str(self.blocknum) + str(self.nonce) + self.data + self.previous_Hash
