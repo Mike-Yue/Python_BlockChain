@@ -76,7 +76,7 @@ class Block:
         hash_value = hashlib.sha256(total_string.encode('utf-8')).hexdigest()
         print ("Mining nonce...Please wait")
         print (self.blocknum)
-        while hash_value[0:5] != "00000":
+        while hash_value[0:7] != "0000000":
             if(exitFlag == 1):
                 sys.exit()
 
