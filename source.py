@@ -60,6 +60,78 @@ def plot_time():
     plt.ylabel('Seconds')
     plt.show()
 
+#Creates a form to sign up for User ID/Password
+def sign_up():
+    sign_up_menu = tkinter.Tk()
+    sign_up_menu.title("Sign Up")
+
+    #Captions
+    username_caption = Label(sign_up_menu, text = "Enter your username", padx= '15', pady = '5')
+    username_caption.grid(row = 0, column = 0)
+
+    password_caption = Label(sign_up_menu, text = "Enter your password", padx= '15', pady = '5')
+    password_caption.grid(row = 2, column = 0)
+
+    #
+    global username, password
+    username = Entry(sign_up_menu, width = '40', selectborderwidth = '15')
+    username.grid(row = 0, column = 1, columnspan = 2)
+
+    password = Entry(sign_up_menu, show = '*', width = '40', selectborderwidth = '15')
+    password.grid(row = 2, column = 1, columnspan = 2)
+
+    #Submit Button
+    sign_up_button = tkinter.Button(sign_up_menu, text = "Create Account", command = create_account, font = ('Times', '12'))
+    sign_up_button.grid(row = 3, column = 0, columnspan = 3, sticky=W+E+N+S)
+
+#POSTS a new account into database
+#Should check if account already exists
+def create_account():
+    global username, password
+    print(username.get(), password.get())
+
+    newdata = {"username": username.get(), "password": password.get()}
+    post = requests.post('http://8c3076e2.ngrok.io/postaccount', json=newdata, auth=('admin', 'supersecret'))
+    print(post)
+    username.delete(0, END)
+    password.delete(0, END)
+    print ("Account Created. Please Log in")
+
+#Checks database if a username password key pair exists, then logs them in if it does
+def login():
+    sign_up_menu.destroy()
+
+    top = tkinter.Tk()
+    top.title("Welcome to the ZerOCoin GUI")
+
+    #Captions
+    caption = Label(top, text = "Enter data for the block")
+    caption.grid(row = 0, columnspan = 2)
+
+    #Text entries
+    submit_text = Text(top, bd = 5, height = '30' )
+    submit_text.grid(row = 1, rowspan = 4)
+
+    #Buttons
+    print_blocks_button = tkinter.Button(top, text = "Print All blocks", command = print_all_blocks, font = ('Times', '12'))
+    print_blocks_button.grid(row = 1, column = 1, sticky=W+E+N+S)
+
+    submit_button = tkinter.Button(top, text = "Mine New Block", command = mine_block, font = ('Times', '12'))
+    submit_button.grid(row = 2, column = 1, sticky=W+E+N+S)
+
+    quit_button = tkinter.Button(top, text = "Exit Application", command = quit_gui, font = ('Times', '12'))
+    quit_button.grid(row = 4, column = 1, sticky=W+E+N+S)
+
+    plot_button = tkinter.Button(top, text = "Plot Times", command = plot_time, font = ('Times', '12'), width = '20')
+    plot_button.grid(row = 3, column = 1, sticky=W+E+N+S)
+
+    sign_up_button = tkinter.Button(top, text = "Sign Up", command = sign_up, font = ("Times", "12"))
+    sign_up_button.grid(row = 5, column = 0, sticky = W+E+N+S)
+
+    print ("Logged in!")
+
+    top.mainloop()
+    exitFlag = 1
 
 
 class Block:
@@ -167,6 +239,35 @@ if __name__ == '__main__':
     exitFlag = 0
     exitLoop = False
 
+    global sign_up_menu
+    sign_up_menu = tkinter.Tk()
+    sign_up_menu.title("Sign Up")
+
+    #Captions
+    username_caption = Label(sign_up_menu, text = "Enter your username", padx= '15', pady = '5')
+    username_caption.grid(row = 0, column = 0)
+
+    password_caption = Label(sign_up_menu, text = "Enter your password", padx= '15', pady = '5')
+    password_caption.grid(row = 2, column = 0)
+
+    #
+    global username, password
+    username = Entry(sign_up_menu, width = '40', selectborderwidth = '15')
+    username.grid(row = 0, column = 1, columnspan = 3)
+
+    password = Entry(sign_up_menu, show = '*', width = '40', selectborderwidth = '15')
+    password.grid(row = 2, column = 1, columnspan = 3)
+
+    #Submit Button
+    sign_up_button = tkinter.Button(sign_up_menu, text = "Create Account", command = create_account, font = ('Times', '12'))
+    sign_up_button.grid(row = 3, column = 0, columnspan = 2, sticky=W+E+N+S)
+
+    login_button = tkinter.Button(sign_up_menu, text = "Log In", command = login, font = ('Times', '12'))
+    login_button.grid(row = 3, column = 2, columnspan = 2, sticky=W+E+N+S)
+
+
+    sign_up_menu.mainloop()
+    """
     top = tkinter.Tk()
     top.title("Welcome to the ZerOCoin GUI")
 
@@ -191,6 +292,9 @@ if __name__ == '__main__':
     plot_button = tkinter.Button(top, text = "Plot Times", command = plot_time, font = ('Times', '12'), width = '20')
     plot_button.grid(row = 3, column = 1, sticky=W+E+N+S)
 
+    sign_up_button = tkinter.Button(top, text = "Sign Up", command = sign_up, font = ("Times", "12"))
+    sign_up_button.grid(row = 5, column = 0, sticky = W+E+N+S)
+
 
     top.mainloop()
-    exitFlag = 1
+    exitFlag = 1 """
