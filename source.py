@@ -26,6 +26,7 @@ def mine_block():
 
 #Quits GUI
 def quit_gui():
+    global top
     top.destroy()
     global exitFlag
     exitFlag = 1
@@ -100,7 +101,7 @@ def create_account():
 #Checks database if a username password key pair exists, then logs them in if it does
 def login():
     sign_up_menu.destroy()
-
+    global top
     top = tkinter.Tk()
     top.title("Welcome to the ZerOCoin GUI")
 
@@ -109,6 +110,7 @@ def login():
     caption.grid(row = 0, columnspan = 2)
 
     #Text entries
+    global submit_text
     submit_text = Text(top, bd = 5, height = '30' )
     submit_text.grid(row = 1, rowspan = 4)
 
@@ -184,6 +186,7 @@ class myThread (threading.Thread):
 
    def run(self):
       if(self.job == 'mine'):
+          global submit_text
           print ("Starting " + self.name)
           get = requests.get('http://8c3076e2.ngrok.io', auth=('admin', 'supersecret'))
           data = get.json()
