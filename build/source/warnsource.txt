@@ -1,11 +1,11 @@
 missing module named 'win32com.gen_py' - imported by win32com, c:\users\mike\appdata\local\programs\python\python36-32\lib\site-packages\PyInstaller\loader\rthooks\pyi_rth_win32comgenpy.py
 missing module named pyimod03_importers - imported by c:\users\mike\appdata\local\programs\python\python36-32\lib\site-packages\PyInstaller\loader\rthooks\pyi_rth_pkgres.py
-missing module named 'pkg_resources.extern.pyparsing' - imported by pkg_resources._vendor.packaging.requirements, pkg_resources._vendor.packaging.markers
 missing module named 'com.sun' - imported by pkg_resources._vendor.appdirs
 missing module named com - imported by pkg_resources._vendor.appdirs
-missing module named StringIO - imported by six, numpy.lib.utils, numpy.testing.nose_tools.utils, numpy.lib.format, urllib3.packages.six, requests.compat, pkg_resources._vendor.six
+missing module named 'pkg_resources.extern.pyparsing' - imported by pkg_resources._vendor.packaging.requirements, pkg_resources._vendor.packaging.markers
 missing module named __builtin__ - imported by numpy.core.numerictypes, numpy.core.numeric, numpy.distutils.misc_util, numpy.lib.function_base, numpy.lib._iotools, numpy.ma.core, numpy, pyparsing, pkg_resources._vendor.pyparsing
 missing module named ordereddict - imported by pyparsing, pkg_resources._vendor.pyparsing
+missing module named StringIO - imported by six, numpy.lib.utils, numpy.testing.nose_tools.utils, numpy.lib.format, urllib3.packages.six, requests.compat, pkg_resources._vendor.six
 missing module named __main__ - imported by pkg_resources
 missing module named pkg_resources.extern.packaging - imported by pkg_resources.extern, pkg_resources
 missing module named pkg_resources.extern.appdirs - imported by pkg_resources.extern, pkg_resources
@@ -21,6 +21,7 @@ missing module named multiprocessing.get_start_method - imported by multiprocess
 missing module named resource - imported by posix, C:\Users\Mike\PycharmProjects\firstProject\venv\source.py
 missing module named posix - imported by os, C:\Users\Mike\PycharmProjects\firstProject\venv\source.py
 missing module named _posixsubprocess - imported by subprocess, multiprocessing.util, C:\Users\Mike\PycharmProjects\firstProject\venv\source.py
+missing module named org - imported by pickle, C:\Users\Mike\PycharmProjects\firstProject\venv\source.py
 missing module named readline - imported by cmd, code, pdb, C:\Users\Mike\PycharmProjects\firstProject\venv\source.py
 excluded module named _frozen_importlib - imported by importlib, importlib.abc, C:\Users\Mike\PycharmProjects\firstProject\venv\source.py
 missing module named _frozen_importlib_external - imported by importlib._bootstrap, importlib, importlib.abc, C:\Users\Mike\PycharmProjects\firstProject\venv\source.py
@@ -40,10 +41,9 @@ missing module named urllib.quote_plus - imported by urllib, requests.compat
 missing module named urllib.unquote - imported by urllib, requests.compat
 missing module named urllib.quote - imported by urllib, requests.compat
 missing module named grp - imported by shutil, tarfile, pathlib, distutils.archive_util, C:\Users\Mike\PycharmProjects\firstProject\venv\source.py
+missing module named pwd - imported by posixpath, shutil, tarfile, http.server, webbrowser, pathlib, distutils.util, distutils.archive_util, netrc, getpass, C:\Users\Mike\PycharmProjects\firstProject\venv\source.py
 missing module named _dummy_threading - imported by dummy_threading, C:\Users\Mike\PycharmProjects\firstProject\venv\source.py
 missing module named 'org.python' - imported by copy, setuptools.sandbox, C:\Users\Mike\PycharmProjects\firstProject\venv\source.py, xml.sax
-missing module named pwd - imported by posixpath, shutil, tarfile, http.server, webbrowser, pathlib, distutils.util, distutils.archive_util, netrc, getpass, C:\Users\Mike\PycharmProjects\firstProject\venv\source.py
-missing module named org - imported by pickle, C:\Users\Mike\PycharmProjects\firstProject\venv\source.py
 missing module named multiprocessing.Process - imported by multiprocessing, C:\Users\Mike\PycharmProjects\firstProject\venv\source.py
 missing module named multiprocessing.SimpleQueue - imported by multiprocessing, concurrent.futures.process
 missing module named 'backports.ssl_match_hostname' - imported by setuptools.ssl_support, urllib3.packages.ssl_match_hostname

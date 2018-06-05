@@ -107,9 +107,9 @@ def create_account():
 
 #Checks database if a username password key pair exists, then logs them in if it does
 def login():
-    global username, password
+    global username, password, ID
     print(username.get(), password.get())
-
+    ID = username.get()
     newdata = {"username": username.get(), "password": password.get()}
     try:
         post = requests.post('http://8c3076e2.ngrok.io/signin', json=newdata, auth=('admin', 'supersecret'))
@@ -147,9 +147,6 @@ def login():
 
         plot_button = tkinter.Button(top, text = "Plot Times", command = plot_time, font = ('Times', '12'), width = '20')
         plot_button.grid(row = 3, column = 1, sticky=W+E+N+S)
-
-        sign_up_button = tkinter.Button(top, text = "Sign Up", command = sign_up, font = ("Times", "12"))
-        sign_up_button.grid(row = 5, column = 0, sticky = W+E+N+S)
 
         print ("Logged in!")
 
@@ -207,16 +204,16 @@ class myThread (threading.Thread):
 
    def run(self):
       if(self.job == 'mine'):
-          global submit_text
+          global submit_text, username, ID
           print ("Starting " + self.name)
           get = requests.get('http://8c3076e2.ngrok.io', auth=('admin', 'supersecret'))
           data = get.json()
           blocknum = data['number'] + 1
           global BlockChain, iterate, mining_times
           if blocknum == data["number"] + 1:
-              new_block = Block(submit_text.get(1.0, END) + str(datetime.now()), data["curr_hash"], blocknum)
+              new_block = Block(submit_text.get(1.0, END) + str(datetime.now()) + ' Mined by ' + ID, data["curr_hash"], blocknum)
           else:
-              new_block = Block(submit_text.get(1.0, END) + str(datetime.now()), BlockChain[iterate - 1].current_Hash,
+              new_block = Block(submit_text.get(1.0, END) + str(datetime.now()) + ' Mined by' + ID, BlockChain[iterate - 1].current_Hash,
                                 blocknum)
           start_time = time.clock()
           duplicate = new_block.mine_nonce()
