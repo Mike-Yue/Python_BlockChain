@@ -61,6 +61,10 @@ def plot_time():
     plt.ylabel('Seconds')
     plt.show()
 
+#Checks if block has been mined already
+def check():
+    thread3 = myThread(1, "check block thread", 'check')
+    thread3.start()
 #Creates a form to sign up for User ID/Password
 def sign_up():
     sign_up_menu = tkinter.Tk()
@@ -127,13 +131,13 @@ def login():
         top.title("Welcome to the ZerOCoin GUI")
 
         #Captions
-        caption = Label(top, text = "Enter data for the block")
-        caption.grid(row = 0, columnspan = 2)
+        caption = Label(top, text = "Enter data for the block", font = ('Times', '12'))
+        caption.grid(row = 0, columnspan = 1)
 
         #Text entries
         global submit_text
         submit_text = Text(top, bd = 5, height = '30' )
-        submit_text.grid(row = 1, rowspan = 4)
+        submit_text.grid(row = 1, rowspan = 5)
 
         #Buttons
         print_blocks_button = tkinter.Button(top, text = "Print All blocks", command = print_all_blocks, font = ('Times', '12'))
@@ -147,6 +151,9 @@ def login():
 
         plot_button = tkinter.Button(top, text = "Plot Times", command = plot_time, font = ('Times', '12'), width = '20')
         plot_button.grid(row = 3, column = 1, sticky=W+E+N+S)
+
+        check_button = tkinter.Button(top, text = "Check if Block Has Been Mined", command = check, font = ('Times', '12'), width = '25')
+        check_button.grid(row = 5, column = 1, sticky=W+E+N+S)
 
         print ("Logged in!")
 
@@ -179,7 +186,6 @@ class Block:
                 print (self.nonce)
         get = requests.get('http://8c3076e2.ngrok.io/interrupt', auth=('admin', 'supersecret'))
         data = get.json()
-        print (data)
         if (data != self.blocknum):
             exitLoop = True
         if(exitLoop == False):
@@ -204,7 +210,7 @@ class myThread (threading.Thread):
 
    def run(self):
       if(self.job == 'mine'):
-          global submit_text, username, ID
+          global submit_text, username, ID, blocknum
           print ("Starting " + self.name)
           get = requests.get('http://8c3076e2.ngrok.io', auth=('admin', 'supersecret'))
           data = get.json()
@@ -219,7 +225,7 @@ class myThread (threading.Thread):
           duplicate = new_block.mine_nonce()
           if(duplicate == False):
               total_time = time.clock() - start_time
-              print(str(total_time) + "seconds to run")
+              print(str(total_time) + " seconds to run")
               mining_times.append(total_time)
               BlockChain.append(new_block)
               submit_text.delete(1.0, END)
@@ -251,7 +257,13 @@ class myThread (threading.Thread):
               print('Block Current Hash:', data[i]['curr_hash'])
               print('\n')
 
-
+      if(self.job == 'check'):
+          get = requests.get('http://8c3076e2.ngrok.io/interrupt', auth=('admin', 'supersecret'))
+          data = get.json()
+          if(blocknum == data):
+              print ("Block has not yet been mined")
+          else:
+              print ("Block has been mined")
 #Main Thread/Loop
 if __name__ == '__main__':
     BlockChain = []
@@ -288,34 +300,4 @@ if __name__ == '__main__':
 
 
     sign_up_menu.mainloop()
-    """
-    top = tkinter.Tk()
-    top.title("Welcome to the ZerOCoin GUI")
 
-    #Captions
-    caption = Label(top, text = "Enter data for the block")
-    caption.grid(row = 0, columnspan = 2)
-
-    #Text entries
-    submit_text = Text(top, bd = 5, height = '30' )
-    submit_text.grid(row = 1, rowspan = 4)
-
-    #Buttons
-    print_blocks_button = tkinter.Button(top, text = "Print All blocks", command = print_all_blocks, font = ('Times', '12'))
-    print_blocks_button.grid(row = 1, column = 1, sticky=W+E+N+S)
-
-    submit_button = tkinter.Button(top, text = "Mine New Block", command = mine_block, font = ('Times', '12'))
-    submit_button.grid(row = 2, column = 1, sticky=W+E+N+S)
-
-    quit_button = tkinter.Button(top, text = "Exit Application", command = quit_gui, font = ('Times', '12'))
-    quit_button.grid(row = 4, column = 1, sticky=W+E+N+S)
-
-    plot_button = tkinter.Button(top, text = "Plot Times", command = plot_time, font = ('Times', '12'), width = '20')
-    plot_button.grid(row = 3, column = 1, sticky=W+E+N+S)
-
-    sign_up_button = tkinter.Button(top, text = "Sign Up", command = sign_up, font = ("Times", "12"))
-    sign_up_button.grid(row = 5, column = 0, sticky = W+E+N+S)
-
-
-    top.mainloop()
-    exitFlag = 1 """
