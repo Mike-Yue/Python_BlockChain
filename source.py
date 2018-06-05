@@ -17,7 +17,6 @@ from datetime import datetime
 from multiprocessing import Process
 import time
 
-
 #Prints text in the submit_text widget to console
 #Mines new block with the text in the field as the data
 def mine_block():
@@ -258,12 +257,17 @@ class myThread (threading.Thread):
               print('\n')
 
       if(self.job == 'check'):
-          get = requests.get('http://8c3076e2.ngrok.io/interrupt', auth=('admin', 'supersecret'))
-          data = get.json()
-          if(blocknum == data):
-              print ("Block has not yet been mined")
+          try:
+            blocknum
+          except NameError:
+              print("You are not mining a block right now")
           else:
-              print ("Block has been mined")
+              get = requests.get('http://8c3076e2.ngrok.io/interrupt', auth=('admin', 'supersecret'))
+              data = get.json()
+              if(blocknum == data):
+                  print ("Block has not yet been mined")
+              else:
+                  print ("Block has been mined")
 #Main Thread/Loop
 if __name__ == '__main__':
     BlockChain = []
