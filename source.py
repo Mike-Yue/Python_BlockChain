@@ -92,48 +92,69 @@ def create_account():
     print(username.get(), password.get())
 
     newdata = {"username": username.get(), "password": password.get()}
-    post = requests.post('http://8c3076e2.ngrok.io/postaccount', json=newdata, auth=('admin', 'supersecret'))
-    print(post)
+    try:
+        post = requests.post('http://8c3076e2.ngrok.io/postaccount', json=newdata, auth=('admin', 'supersecret'))
+    except requests.exceptions.RequestException as e:
+        print (e)
+    print(post.status_code)
+    if (post.status_code == 400):
+        print ("Username already exists. Please sign in")
+    else:
+        print("Account Created. Please Log in")
     username.delete(0, END)
     password.delete(0, END)
-    print ("Account Created. Please Log in")
+
 
 #Checks database if a username password key pair exists, then logs them in if it does
 def login():
-    sign_up_menu.destroy()
-    global top
-    top = tkinter.Tk()
-    top.title("Welcome to the ZerOCoin GUI")
+    global username, password
+    print(username.get(), password.get())
 
-    #Captions
-    caption = Label(top, text = "Enter data for the block")
-    caption.grid(row = 0, columnspan = 2)
+    newdata = {"username": username.get(), "password": password.get()}
+    try:
+        post = requests.post('http://8c3076e2.ngrok.io/signin', json=newdata, auth=('admin', 'supersecret'))
+    except requests.exceptions.RequestException as e:
+        print (e)
+    print(post.status_code)
+    if(post.status_code == 400):
+        print("Invalid user information. Please Try again")
+        username.delete(0, END)
+        password.delete(0, END)
+    else:
+        sign_up_menu.destroy()
+        global top
+        top = tkinter.Tk()
+        top.title("Welcome to the ZerOCoin GUI")
 
-    #Text entries
-    global submit_text
-    submit_text = Text(top, bd = 5, height = '30' )
-    submit_text.grid(row = 1, rowspan = 4)
+        #Captions
+        caption = Label(top, text = "Enter data for the block")
+        caption.grid(row = 0, columnspan = 2)
 
-    #Buttons
-    print_blocks_button = tkinter.Button(top, text = "Print All blocks", command = print_all_blocks, font = ('Times', '12'))
-    print_blocks_button.grid(row = 1, column = 1, sticky=W+E+N+S)
+        #Text entries
+        global submit_text
+        submit_text = Text(top, bd = 5, height = '30' )
+        submit_text.grid(row = 1, rowspan = 4)
 
-    submit_button = tkinter.Button(top, text = "Mine New Block", command = mine_block, font = ('Times', '12'))
-    submit_button.grid(row = 2, column = 1, sticky=W+E+N+S)
+        #Buttons
+        print_blocks_button = tkinter.Button(top, text = "Print All blocks", command = print_all_blocks, font = ('Times', '12'))
+        print_blocks_button.grid(row = 1, column = 1, sticky=W+E+N+S)
 
-    quit_button = tkinter.Button(top, text = "Exit Application", command = quit_gui, font = ('Times', '12'))
-    quit_button.grid(row = 4, column = 1, sticky=W+E+N+S)
+        submit_button = tkinter.Button(top, text = "Mine New Block", command = mine_block, font = ('Times', '12'))
+        submit_button.grid(row = 2, column = 1, sticky=W+E+N+S)
 
-    plot_button = tkinter.Button(top, text = "Plot Times", command = plot_time, font = ('Times', '12'), width = '20')
-    plot_button.grid(row = 3, column = 1, sticky=W+E+N+S)
+        quit_button = tkinter.Button(top, text = "Exit Application", command = quit_gui, font = ('Times', '12'))
+        quit_button.grid(row = 4, column = 1, sticky=W+E+N+S)
 
-    sign_up_button = tkinter.Button(top, text = "Sign Up", command = sign_up, font = ("Times", "12"))
-    sign_up_button.grid(row = 5, column = 0, sticky = W+E+N+S)
+        plot_button = tkinter.Button(top, text = "Plot Times", command = plot_time, font = ('Times', '12'), width = '20')
+        plot_button.grid(row = 3, column = 1, sticky=W+E+N+S)
 
-    print ("Logged in!")
+        sign_up_button = tkinter.Button(top, text = "Sign Up", command = sign_up, font = ("Times", "12"))
+        sign_up_button.grid(row = 5, column = 0, sticky = W+E+N+S)
 
-    top.mainloop()
-    exitFlag = 1
+        print ("Logged in!")
+
+        top.mainloop()
+        exitFlag = 1
 
 
 class Block:
