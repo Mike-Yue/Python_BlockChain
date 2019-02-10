@@ -42,7 +42,7 @@ def lsrl(x, y):
 
 #GETs data from NodeJS server and plots it using Matploblib
 def plot_time():
-    get = requests.get('http://8c3076e2.ngrok.io/times', auth = ('admin', 'supersecret'))
+    get = requests.get('http://localhost:8080/times', auth = ('admin', 'supersecret'))
     data = get.json()
     print (data)
     x = []
@@ -96,7 +96,7 @@ def create_account():
 
     newdata = {"username": username.get(), "password": password.get()}
     try:
-        post = requests.post('http://8c3076e2.ngrok.io/postaccount', json=newdata, auth=('admin', 'supersecret'))
+        post = requests.post('http://localhost:8080/postaccount', json=newdata, auth=('admin', 'supersecret'))
     except requests.exceptions.RequestException as e:
         print (e)
     print(post.status_code)
@@ -115,7 +115,7 @@ def login():
     ID = username.get()
     newdata = {"username": username.get(), "password": password.get()}
     try:
-        post = requests.post('http://8c3076e2.ngrok.io/signin', json=newdata, auth=('admin', 'supersecret'))
+        post = requests.post('http://localhost:8080/signin', json=newdata, auth=('admin', 'supersecret'))
     except requests.exceptions.RequestException as e:
         print (e)
     print(post.status_code)
@@ -183,7 +183,7 @@ class Block:
             hash_value = hashlib.sha256(total_string.encode('utf-8')).hexdigest()
             if(self.nonce % 500000 == 0):
                 print (self.nonce)
-        get = requests.get('http://8c3076e2.ngrok.io/interrupt', auth=('admin', 'supersecret'))
+        get = requests.get('http://localhost:8080/interrupt', auth=('admin', 'supersecret'))
         data = get.json()
         if (data != self.blocknum):
             exitLoop = True
@@ -211,8 +211,15 @@ class myThread (threading.Thread):
       if(self.job == 'mine'):
           global submit_text, username, ID, blocknum
           print ("Starting " + self.name)
-          get = requests.get('http://8c3076e2.ngrok.io', auth=('admin', 'supersecret'))
-          data = get.json()
+          get = requests.get('http://localhost:8080/', auth=('admin', 'supersecret'))
+          if get.json() is None:
+            print('First block')
+            data = {}
+            data['number'] = -1
+            data['curr_hash'] = '0000000000000000000000000000000000000000000000000000000000000000'
+          else:
+            data = get.json()
+
           blocknum = data['number'] + 1
           global BlockChain, iterate, mining_times
           if blocknum == data["number"] + 1:
@@ -232,7 +239,7 @@ class myThread (threading.Thread):
               newdata = {"number": blocknum, "nonce": new_block.nonce, "data": new_block.data,
                          "prev_hash": new_block.previous_Hash, "curr_hash": new_block.current_Hash,
                          "time": total_time}
-              post = requests.post('http://8c3076e2.ngrok.io/postdata', json=newdata, auth=('admin', 'supersecret'))
+              post = requests.post('http://localhost:8080/postdata', json=newdata, auth=('admin', 'supersecret'))
 
               print(str(blocknum) + " " + str(
                   new_block.nonce) + " " + new_block.data + " " + new_block.previous_Hash + " " + new_block.current_Hash)
@@ -245,8 +252,10 @@ class myThread (threading.Thread):
           print ("Exiting " + self.name)
 
       if(self.job == 'print'):
-          get = requests.get('http://8c3076e2.ngrok.io/allblocks', auth=('admin', 'supersecret'))
+          get = requests.get('http://localhost:8080/allblocks', auth=('admin', 'supersecret'))
           data = get.json()
+          if len(data) == 0:
+            print('No blocks!')
           # data is a list ADT, each element of Data is a dict ADT
           for i in range(0, len(data)):
               print('Block Number:', str(data[i]['number']))
@@ -262,8 +271,9 @@ class myThread (threading.Thread):
           except NameError:
               print("You are not mining a block right now")
           else:
-              get = requests.get('http://8c3076e2.ngrok.io/interrupt', auth=('admin', 'supersecret'))
+              get = requests.get('http://localhost:8080/interrupt', auth=('admin', 'supersecret'))
               data = get.json()
+              print(blocknum)
               if(blocknum == data):
                   print ("Block has not yet been mined")
               else:
